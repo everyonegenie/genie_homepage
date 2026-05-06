@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모두의 지니 | Everyone's Genie</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1a2744;
+      --navy2:  #243058;
+      --gold:   #c9a84c;
+      --gold2:  #e2c068;
+      --light:  #f5f6fa;
+      --white:  #ffffff;
+      --gray:   #6b7a99;
+      --border: #dde2f0;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(26,39,68,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR',
+                   'Malgun Gothic', BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(26,39,68,.96);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6vw;
+      height: 64px;
+    }
+    .nav-logo {
+      color: var(--white); font-size: 1.15rem; font-weight: 700;
+      letter-spacing: -.02em; text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,.78); font-size: .88rem; text-decoration: none;
+      letter-spacing: .03em; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--gold2); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white); border-radius: 2px; transition: .3s;
+    }
+    .mobile-menu {
+      display: none; position: fixed; inset: 64px 0 0;
+      background: var(--navy); z-index: 99;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--white); font-size: 1.3rem; text-decoration: none;
+      letter-spacing: .04em;
+    }
+    .mobile-menu a:hover { color: var(--gold2); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      background: linear-gradient(140deg, var(--navy) 0%, var(--navy2) 60%, #1e3a6e 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 6vw 80px;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(201,168,76,.12) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid rgba(201,168,76,.5);
+      color: var(--gold);
+      font-size: .78rem; letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .38rem 1.1rem; border-radius: 99px;
+      margin-bottom: 1.8rem;
+    }
+    .hero-title {
+      color: var(--white);
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      font-weight: 800; letter-spacing: -.03em;
+      line-height: 1.15;
+      margin-bottom: .6rem;
+    }
+    .hero-title .gold { color: var(--gold); }
+    .hero-en {
+      color: rgba(255,255,255,.45);
+      font-size: clamp(.85rem, 1.8vw, 1rem);
+      letter-spacing: .22em; text-transform: uppercase;
+      margin-bottom: 1.6rem;
+    }
+    .hero-desc {
+      color: rgba(255,255,255,.7);
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      max-width: 540px;
+      margin: 0 auto 2.6rem;
+    }
+    .hero-cta {
+      display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    }
+    .btn {
+      display: inline-block; text-decoration: none;
+      padding: .75rem 2rem; border-radius: 8px;
+      font-size: .92rem; font-weight: 600; letter-spacing: .02em;
+      transition: transform .18s, box-shadow .18s, background .18s;
+      cursor: pointer; border: none;
+    }
+    .btn-gold {
+      background: var(--gold); color: var(--navy);
+    }
+    .btn-gold:hover {
+      background: var(--gold2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201,168,76,.4);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,.35);
+      color: var(--white);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 2.2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      color: rgba(255,255,255,.35); font-size: .72rem; letter-spacing: .1em;
+    }
+    .scroll-hint-line {
+      width: 1.5px; height: 36px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+      animation: scrollDown 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollDown {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      50.1%{ transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 96px 6vw; }
+    .section-label {
+      font-size: .72rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--gold);
+      font-weight: 700; margin-bottom: .8rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800; letter-spacing: -.02em;
+      color: var(--navy); margin-bottom: 1rem; line-height: 1.2;
+    }
+    .section-sub {
+      color: var(--gray); font-size: .97rem;
+      max-width: 540px; margin-bottom: 3.6rem;
+    }
+    .divider {
+      width: 44px; height: 3px;
+      background: var(--gold); border-radius: 2px;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--light); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: center; max-width: 1100px; margin: 0 auto;
+    }
+    .about-text p { color: var(--gray); margin-bottom: 1rem; font-size: .97rem; }
+    .about-stat-row {
+      display: flex; gap: 2.5rem; margin-top: 2.4rem; flex-wrap: wrap;
+    }
+    .stat { display: flex; flex-direction: column; }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--navy); letter-spacing: -.03em;
+      line-height: 1;
+    }
+    .stat-num span { color: var(--gold); }
+    .stat-label { font-size: .78rem; color: var(--gray); margin-top: .3rem; letter-spacing: .04em; }
+    .about-visual {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .about-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 2.4rem;
+      width: 100%; max-width: 340px;
+    }
+    .about-card-icon {
+      width: 52px; height: 52px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+    }
+    .about-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+    .about-card p { color: var(--gray); font-size: .88rem; }
+    .about-card-ceo {
+      margin-top: 1.6rem; padding-top: 1.4rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: .9rem;
+    }
+    .ceo-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, #a07830 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: var(--white);
+      flex-shrink: 0;
+    }
+    .ceo-info .ceo-name { font-size: .92rem; font-weight: 700; }
+    .ceo-info .ceo-title { font-size: .76rem; color: var(--gray); }
+
+    /* ── SERVICES ── */
+    #services { background: var(--white); }
+    .services-header { max-width: 1100px; margin: 0 auto 3.6rem; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.6rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .service-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.4rem 2rem;
+      transition: border-color .22s, box-shadow .22s, transform .22s;
+      position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      opacity: 0; transition: opacity .22s;
+    }
+    .service-card:hover {
+      border-color: transparent;
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      width: 56px; height: 56px; border-radius: 12px;
+      background: var(--light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; margin-bottom: 1.4rem;
+      transition: background .22s;
+    }
+    .service-card:hover .service-icon {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    }
+    .service-num {
+      font-size: .72rem; letter-spacing: .12em;
+      color: var(--gold); font-weight: 700; margin-bottom: .6rem;
+    }
+    .service-title { font-size: 1.12rem; font-weight: 700; margin-bottom: .3rem; }
+    .service-title-en { font-size: .78rem; color: var(--gray); margin-bottom: .9rem; letter-spacing: .04em; }
+    .service-desc { color: var(--gray); font-size: .88rem; line-height: 1.75; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--light); }
+    .contact-wrap { max-width: 1100px; margin: 0 auto; }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem;
+    }
+    .contact-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2.4rem 2rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-flag {
+      font-size: 1.8rem; margin-bottom: .8rem;
+    }
+    .contact-country {
+      font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); font-weight: 700; margin-bottom: .6rem;
+    }
+    .contact-card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 1.2rem; }
+    .contact-item {
+      display: flex; gap: .9rem; align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .contact-item:last-child { margin-bottom: 0; }
+    .contact-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; flex-shrink: 0; margin-top: .1rem;
+    }
+    .contact-item-text .label {
+      font-size: .72rem; color: var(--gray);
+      text-transform: uppercase; letter-spacing: .1em;
+    }
+    .contact-item-text .value {
+      font-size: .9rem; font-weight: 500; line-height: 1.55;
+    }
+    .contact-ceo-card {
+      margin-top: 1.6rem;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      border-radius: var(--radius);
+      padding: 2.2rem 2rem;
+      display: flex; align-items: center; gap: 1.4rem;
+    }
+    .ceo-big-avatar {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, #a07830 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; color: var(--white);
+      flex-shrink: 0;
+    }
+    .ceo-big-info .ceo-big-name {
+      color: var(--white); font-size: 1.12rem; font-weight: 700;
+    }
+    .ceo-big-info .ceo-big-title {
+      color: rgba(255,255,255,.55); font-size: .82rem; margin-bottom: .5rem;
+    }
+    .ceo-big-info .ceo-big-company {
+      color: var(--gold); font-size: .8rem; letter-spacing: .06em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 2.8rem 6vw;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      color: var(--white); font-size: 1rem; font-weight: 700;
+    }
+    .footer-logo span { color: var(--gold); }
+    .footer-copy {
+      color: rgba(255,255,255,.35); font-size: .78rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.4rem; }
+      .about-visual { display: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      section { padding: 72px 5vw; }
+      .hero-cta { flex-direction: column; align-items: center; }
+      .btn { width: 220px; text-align: center; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#hero">모두의<span> 지니</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">회사 소개</a></li>
+    <li><a href="#services">사업 영역</a></li>
+    <li><a href="#contact">연락처</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="메뉴 열기">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="closeMenu()">회사 소개</a>
+  <a href="#services" onclick="closeMenu()">사업 영역</a>
+  <a href="#contact" onclick="closeMenu()">연락처</a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-badge">Everyone's Genie</div>
+  <h1 class="hero-title"><span class="gold">모두의</span> 지니</h1>
+  <p class="hero-en">Empowering Technology, Connecting the World</p>
+  <p class="hero-desc">
+    임베디드 개발부터 솔라 에너지까지, 기술로 세상을 연결하는 글로벌 파트너입니다.
+  </p>
+  <div class="hero-cta">
+    <a class="btn btn-gold" href="#services">사업 영역 보기</a>
+    <a class="btn btn-outline" href="#contact">문의하기</a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-hint-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text">
+      <div class="section-label">About Us</div>
+      <div class="divider"></div>
+      <h2 class="section-title">기술로 꿈을<br>현실로 만듭니다</h2>
+      <p>
+        모두의 지니(Everyone's Genie)는 임베디드 시스템 개발, 글로벌 소싱, 그리고 신재생 에너지 솔루션을 전문으로 하는 기술 기업입니다.
+      </p>
+      <p>
+        한국 경기도 광명과 홍콩 콰이청에 거점을 두고, 아시아 전역의 고객에게 맞춤형 기술 솔루션과 안정적인 공급망을 제공합니다.
+      </p>
+      <p>
+        지니처럼 고객의 기술적 소망을 현실로 이뤄드리겠습니다.
+      </p>
+      <div class="about-stat-row">
+        <div class="stat">
+          <span class="stat-num">2<span>개국</span></span>
+          <span class="stat-label">거점 운영</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">3<span>개</span></span>
+          <span class="stat-label">핵심 사업 영역</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">KR<span>·</span>HK</span>
+          <span class="stat-label">글로벌 네트워크</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual">
+      <div class="about-card">
+        <div class="about-card-icon">🌐</div>
+        <h3>글로벌 기술 파트너</h3>
+        <p>한국과 홍콩을 거점으로 아시아 전역에 임베디드 기술과 청정 에너지 솔루션을 공급합니다.</p>
+        <div class="about-card-ceo">
+          <div class="ceo-avatar">O</div>
+          <div class="ceo-info">
+            <div class="ceo-name">BJ. OH</div>
+            <div class="ceo-title">대표이사 · CEO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="services-header">
+    <div class="section-label">Our Services</div>
+    <div class="divider"></div>
+    <h2 class="section-title">사업 영역</h2>
+    <p class="section-sub">하드웨어 개발부터 글로벌 소싱, 신재생 에너지까지 — 고객의 필요에 맞는 종합 기술 솔루션을 제공합니다.</p>
+  </div>
+  <div class="services-grid">
+
+    <div class="service-card">
+      <div class="service-icon">🔧</div>
+      <div class="service-num">01</div>
+      <div class="service-title">임베디드 개발</div>
+      <div class="service-title-en">Embedded Development</div>
+      <p class="service-desc">
+        MCU·SoC 펌웨어 설계부터 PCB 하드웨어 설계, IoT 디바이스 양산까지 임베디드 시스템 전 주기를 지원합니다. ESP32, ABOV, ARM Cortex 기반 프로젝트 다수 경험을 보유하고 있습니다.
+      </p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">🔗</div>
+      <div class="service-num">02</div>
+      <div class="service-title">임베디드 개발 소싱</div>
+      <div class="service-title-en">Embedded Development Sourcing</div>
+      <p class="service-desc">
+        홍콩을 허브로 아시아 공급망을 활용한 전자부품·모듈 소싱 및 ODM/OEM 파트너 연결 서비스를 제공합니다. 비용 최적화와 품질 검증을 동시에 실현합니다.
+      </p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">☀️</div>
+      <div class="service-num">03</div>
+      <div class="service-title">솔라패널</div>
+      <div class="service-title-en">Solar Panel</div>
+      <p class="service-desc">
+        태양광 패널 공급 및 설치 컨설팅 서비스를 제공합니다. 산업용·상업용·가정용 규모별 최적 솔루션을 설계하고, 검증된 글로벌 제조사와의 파트너십을 통해 경쟁력 있는 가격을 제안합니다.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="section-label">Contact</div>
+    <div class="divider"></div>
+    <h2 class="section-title">연락처</h2>
+    <p class="section-sub" style="margin-bottom:2.4rem">한국과 홍콩 사무소에서 언제든지 문의를 기다립니다.</p>
+
+    <div class="contact-grid">
+
+      <!-- Korea -->
+      <div class="contact-card">
+        <div class="contact-flag">🇰🇷</div>
+        <div class="contact-country">Korea Office</div>
+        <h3>한국 사무소</h3>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-item-text">
+            <div class="label">주소</div>
+            <div class="value">
+              경기도 광명시 하안로 60<br>
+              광명 SK 테크노 파크 E-509호
+            </div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🏢</div>
+          <div class="contact-item-text">
+            <div class="label">우편번호</div>
+            <div class="value">14322</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hong Kong -->
+      <div class="contact-card">
+        <div class="contact-flag">🇭🇰</div>
+        <div class="contact-country">Hong Kong Office</div>
+        <h3>홍콩 사무소</h3>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-item-text">
+            <div class="label">Address</div>
+            <div class="value">
+              FLAT/RM A 15/F, Goldfield Industrial Building<br>
+              144–150 Tai Lin Pai Road, Kwai Chung<br>
+              Hong Kong
+            </div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🌏</div>
+          <div class="contact-item-text">
+            <div class="label">Region</div>
+            <div class="value">Kwai Tsing District, New Territories</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CEO card -->
+    <div class="contact-ceo-card">
+      <div class="ceo-big-avatar">O</div>
+      <div class="ceo-big-info">
+        <div class="ceo-big-title">대표이사 · Chief Executive Officer</div>
+        <div class="ceo-big-name">BJ. OH</div>
+        <div class="ceo-big-company">모두의 지니 · Everyone's Genie</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">모두의<span> 지니</span> · Everyone's Genie</div>
+  <div class="footer-copy">© 2026 모두의 지니. All rights reserved.</div>
+</footer>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+
+  function closeMenu() {
+    mobileMenu.classList.remove('open');
+  }
+
+  // Close mobile menu on outside click
+  document.addEventListener('click', (e) => {
+    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => {
+          a.style.color = a.getAttribute('href') === '#' + entry.target.id
+            ? 'var(--gold2)' : '';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
