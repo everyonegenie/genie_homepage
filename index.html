@@ -241,10 +241,15 @@
     .services-header { max-width: 1100px; margin: 0 auto 3.6rem; }
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 1.6rem;
       max-width: 1100px; margin: 0 auto;
     }
+    .services-grid .service-card:nth-child(1) { grid-column: 1 / 3; }
+    .services-grid .service-card:nth-child(2) { grid-column: 3 / 5; }
+    .services-grid .service-card:nth-child(3) { grid-column: 5 / 7; }
+    .services-grid .service-card:nth-child(4) { grid-column: 2 / 4; }
+    .services-grid .service-card:nth-child(5) { grid-column: 4 / 6; }
     .service-card {
       background: var(--white);
       border: 1.5px solid var(--border);
@@ -365,6 +370,7 @@
       .about-grid { grid-template-columns: 1fr; gap: 2.4rem; }
       .about-visual { display: none; }
       .services-grid { grid-template-columns: 1fr; }
+      .services-grid .service-card:nth-child(n) { grid-column: 1 / -1; }
       .contact-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
@@ -439,7 +445,7 @@
           <span class="stat-label">거점 운영</span>
         </div>
         <div class="stat">
-          <span class="stat-num">3<span>개</span></span>
+          <span class="stat-num">5<span>개</span></span>
           <span class="stat-label">핵심 사업 영역</span>
         </div>
         <div class="stat">
@@ -502,6 +508,26 @@
       <div class="service-title-en">Solar Panel</div>
       <p class="service-desc">
         태양광 패널 공급 및 설치 컨설팅 서비스를 제공합니다. 산업용·상업용·가정용 규모별 최적 솔루션을 설계하고, 검증된 글로벌 제조사와의 파트너십을 통해 경쟁력 있는 가격을 제안합니다.
+      </p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">📡</div>
+      <div class="service-num">04</div>
+      <div class="service-title">IoT 시스템 통합</div>
+      <div class="service-title-en">IoT System Integration</div>
+      <p class="service-desc">
+        센서·게이트웨이·클라우드를 연결하는 엔드투엔드 IoT 솔루션을 구축합니다. MQTT·BLE·LTE 등 다양한 통신 프로토콜을 활용해 실시간 데이터 수집 및 원격 제어 시스템을 납품합니다.
+      </p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">🤝</div>
+      <div class="service-num">05</div>
+      <div class="service-title">글로벌 기술 파트너십</div>
+      <div class="service-title-en">Global Tech Partnership</div>
+      <p class="service-desc">
+        홍콩 거점을 활용해 아시아 제조사·기술 기업과의 비즈니스 매칭 및 합작 개발을 지원합니다. 현지 규제·인증·통관 컨설팅부터 장기 기술 협력 계약까지 글로벌 진출의 전 과정을 함께합니다.
       </p>
     </div>
 
